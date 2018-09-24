@@ -1,0 +1,28 @@
+#Importing necessary libraries
+import pandas as pd
+import numpy as np
+import os
+from fnmatch import fnmatch
+import savReaderWriter as spss
+
+#get all the .sav files from the directory
+def get_list_of_SPSS_files (directoryPath):
+    patternSPSS = "*.sav"
+    filesSAV = []
+    counter = 0
+    for path, subdirs, files in os.walk(directoryPath):
+        for name in files:
+            counter = counter + 1
+            if fnmatch(name, patternSPSS):
+                filesSAV.append(os.path.join(path, name))
+    return filesSAV
+
+directory = (r'PATH')
+filesSAV = get_list_of_SPSS_files(directory)
+
+for i in range (0,len(filesSAV)):
+    with spss.SavReader (filesSAV[i], returnHeader = True) as reader:
+        records = reader.all()
+    df = pd.DataFrame(records)
+    filename = 'NAME_'+str(i)+'.csv'
+    df.to_csv(filename)
